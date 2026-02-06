@@ -25,4 +25,6 @@ if age >= 18:
 if is_logged_in:
   print("Welcome back!")
 
-  
+username = "admin"
+if username == "admin":
+    print("Welcome, admin")
