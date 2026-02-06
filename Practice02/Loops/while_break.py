@@ -6,12 +6,20 @@ while True:
     x += 1
 
 
-i = 10
-while i >= 1:
-    print(i)
-    i -= 1
+
+while True:
+    x = int(input())
+    if x > 0:
+        break
 
 
+while True:
+    n = int(input())
+    if n == 0:
+        break
+    print(n)
+
+    
 secret = 7
 while True:
     guess = int(input("Guess the number: "))
@@ -31,11 +39,5 @@ while i < len(numbers):
     i += 1
 
 
-password = "1234"
-user_input = ""
 
-while user_input != password:
-    user_input = input("Enter password: ")
-
-print("Access granted")
 
