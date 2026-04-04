@@ -12,18 +12,18 @@ def create_table():
     query = """
     CREATE TABLE IF NOT EXISTS phonebook (
         id SERIAL PRIMARY KEY,
-        name VARCHAR(50),
-        surname VARCHAR(50),
-        phone VARCHAR(20)
+        name VARCHAR(50) NOT NULL,
+        surname VARCHAR(50) NOT NULL,
+        phone VARCHAR(20) UNIQUE NOT NULL
     )
     """
 
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(query)
-            conn.commit()
+        conn.commit()
 
-    print("✅ Table ready")
+    print("✅ Table 'phonebook' ready in phonebook_db")
 
 
 # ================== UPSERT ==================
@@ -37,7 +37,7 @@ def upsert_user():
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(query, (name, surname, phone))
-            conn.commit()
+        conn.commit()
 
     print("✅ User added/updated")
 
@@ -57,13 +57,12 @@ def insert_many():
         print("❌ Sizes do not match")
         return
 
+    query = "CALL insert_many_users(%s, %s, %s)"
+
     with get_conn() as conn:
         with conn.cursor() as cur:
-            cur.execute(
-                "CALL insert_many_users(%s, %s, %s)",
-                (names, surnames, phones)
-            )
-            conn.commit()
+            cur.execute(query, (names, surnames, phones))
+        conn.commit()
 
     print("✅ Bulk insert done")
 
@@ -87,7 +86,7 @@ def pagination():
     try:
         limit = int(input("📄 Limit: "))
         offset = int(input("➡️ Offset: "))
-    except:
+    except ValueError:
         print("❌ Numbers only")
         return
 
@@ -110,7 +109,7 @@ def delete_contact():
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(query, (value,))
-            conn.commit()
+        conn.commit()
 
     print("🗑 Deleted")
 
@@ -132,6 +131,7 @@ def print_contacts(rows):
 
 # ================== MENU ==================
 def main():
+    print("🔌 Connecting to database: phonebook_db")
     create_table()
 
     while True:
