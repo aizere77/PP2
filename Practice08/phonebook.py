@@ -13,9 +13,9 @@ def create_table():
     query = """
     CREATE TABLE IF NOT EXISTS phonebook (
         id SERIAL PRIMARY KEY,
-        username VARCHAR(50) UNIQUE NOT NULL,
-        surname VARCHAR(50) UNIQUE NOT NULL,
-        phone VARCHAR(20) NOT NULL
+        username VARCHAR(50) NOT NULL,
+        surname VARCHAR(50) NOT NULL,
+        phone VARCHAR(20) UNIQUE NOT NULL
     )
     """
 
@@ -52,7 +52,7 @@ def insert_many():
     print("📞 Enter phones:")
     phones = input().split()
 
-    if len(users) != len(phones):
+    if len(users) != len(surnames) or len(users) != len(phones):
         print("❌ Error: sizes do not match")
         return
 
@@ -60,7 +60,7 @@ def insert_many():
         conn.notices.clear()
 
         with conn.cursor() as cur:
-            cur.execute("CALL loophz(%s, %s)", (users, phones))
+            cur.execute("CALL loophz(%s, %s, %s)", (users, surnames, phones))
             conn.commit()
 
         # show notices
