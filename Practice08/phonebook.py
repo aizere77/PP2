@@ -4,7 +4,8 @@ from config import load_config
 
 # ================== CONNECTION ==================
 def get_conn():
-    return psycopg2.connect(**load_config())
+    config = load_config()
+    return psycopg2.connect(**config)
 
 
 # ================== TABLE ==================
@@ -12,18 +13,18 @@ def create_table():
     query = """
     CREATE TABLE IF NOT EXISTS phonebook (
         id SERIAL PRIMARY KEY,
-        name VARCHAR(50) NOT NULL,
-        surname VARCHAR(50) NOT NULL,
-        phone VARCHAR(20) UNIQUE NOT NULL
+        username VARCHAR(50) UNIQUE NOT NULL,
+        surname VARCHAR(50) UNIQUE NOT NULL,
+        phone VARCHAR(20) NOT NULL
     )
     """
 
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(query)
-        conn.commit()
+            conn.commit()
 
-    print("✅ Table 'phonebook' ready in phonebook_db")
+    print("✅ Table ready")
 
 
 # ================== UPSERT ==================
@@ -32,46 +33,48 @@ def upsert_user():
     surname = input("👤 Surname: ")
     phone = input("📞 Phone: ")
 
-    query = "CALL upsert_user(%s, %s, %s)"
+    query = "CALL upsert_u(%s::TEXT, %s::TEXT, %s::TEXT)"
 
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(query, (name, surname, phone))
-        conn.commit()
+            conn.commit()
 
     print("✅ User added/updated")
 
 
 # ================== BULK INSERT ==================
 def insert_many():
-    print("👥 Enter names:")
-    names = input().split()
-
+    print("👥 Enter usernames:")
+    users = input().split()
     print("👥 Enter surnames:")
     surnames = input().split()
-
     print("📞 Enter phones:")
     phones = input().split()
 
-    if not (len(names) == len(surnames) == len(phones)):
-        print("❌ Sizes do not match")
+    if len(users) != len(phones):
+        print("❌ Error: sizes do not match")
         return
 
-    query = "CALL insert_many_users(%s, %s, %s)"
-
     with get_conn() as conn:
-        with conn.cursor() as cur:
-            cur.execute(query, (names, surnames, phones))
-        conn.commit()
+        conn.notices.clear()
 
-    print("✅ Bulk insert done")
+        with conn.cursor() as cur:
+            cur.execute("CALL loophz(%s, %s)", (users, phones))
+            conn.commit()
+
+        # show notices
+        for notice in conn.notices:
+            print("⚠️", notice.strip())
+
+    print("✅ Done")
 
 
 # ================== SEARCH ==================
 def search_contacts():
     pattern = input("🔍 Search: ")
 
-    query = "SELECT * FROM search_phonebook(%s)"
+    query = "SELECT * FROM records(%s)"
 
     with get_conn() as conn:
         with conn.cursor() as cur:
@@ -86,11 +89,11 @@ def pagination():
     try:
         limit = int(input("📄 Limit: "))
         offset = int(input("➡️ Offset: "))
-    except ValueError:
+    except:
         print("❌ Numbers only")
         return
 
-    query = "SELECT * FROM get_phonebook_paginated(%s, %s)"
+    query = "SELECT * FROM pagination(%s, %s)"
 
     with get_conn() as conn:
         with conn.cursor() as cur:
@@ -102,14 +105,25 @@ def pagination():
 
 # ================== DELETE ==================
 def delete_contact():
-    value = input("❌ Enter name/surname/phone: ")
+    print("1 - Delete by name")
+    print("2 - Delete by phone")
 
-    query = "CALL delete_user(%s)"
+    choice = input("👉 Choose: ")
+
+    if choice == "1":
+        value = input("👤 Name: ")
+    elif choice == "2":
+        value = input("📞 Phone: ")
+    else:
+        print("❌ Wrong choice")
+        return
+
+    query = "CALL del_user(%s)"
 
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(query, (value,))
-        conn.commit()
+            conn.commit()
 
     print("🗑 Deleted")
 
@@ -121,17 +135,16 @@ def print_contacts(rows):
         return
 
     print("\n📋 CONTACTS:")
-    print("-" * 40)
+    print("-" * 45)
 
     for r in rows:
-        print(f"Name: {r[0]} | Surname: {r[1]} | Phone: {r[2]}")
+        print(f"ID: {r[0]} | Name: {r[1]} {r[2]} | Phone: {r[3]}")
 
-    print("-" * 40)
+    print("-" * 45)
 
 
 # ================== MENU ==================
 def main():
-    print("🔌 Connecting to database: phonebook_db")
     create_table()
 
     while True:
@@ -147,17 +160,23 @@ def main():
 
         if choice == "1":
             upsert_user()
+
         elif choice == "2":
             insert_many()
+
         elif choice == "3":
             search_contacts()
+
         elif choice == "4":
             pagination()
+
         elif choice == "5":
             delete_contact()
+
         elif choice == "0":
             print("👋 Goodbye!")
             break
+
         else:
             print("❌ Invalid choice")
 

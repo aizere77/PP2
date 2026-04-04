@@ -1,37 +1,58 @@
--- A procedure to insert a new user by name and phone; if the user already exists, update their phone
-CREATE OR REPLACE PROCEDURE upsert_u(p_name VARCHAR, p_phone VARCHAR)
-LANGUAGE plpgsql AS $$
+-- TABLE
+DROP TABLE IF EXISTS phonebook;
+
+CREATE TABLE phonebook (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    surname VARCHAR(50) NOT NULL,
+    phone VARCHAR(20) UNIQUE NOT NULL
+);
+
+
+-- UPSERT
+CREATE OR REPLACE PROCEDURE upsert_user(
+    p_name TEXT,
+    p_surname TEXT,
+    p_phone TEXT
+)
+LANGUAGE plpgsql
+AS $$
 BEGIN
-    INSERT INTO phonebook (username, phone)
-    VALUES (p_name, p_phone)
-    ON CONFLICT (username) -- usually the primary key column
+    INSERT INTO phonebook(name, surname, phone)
+    VALUES (p_name, p_surname, p_phone)
+    ON CONFLICT (phone)
     DO UPDATE SET
-        phone = EXCLUDED.phone;
+        name = EXCLUDED.name,
+        surname = EXCLUDED.surname;
 END;
 $$;
 
--- A procedure to insert many new users from a list of names and phones - use a loop and 
--- IF inside the procedure, validate phone correctness, and return all incorrect data
-CREATE OR REPLACE PROCEDURE loophz(p_user VARCHAR[], p_phone VARCHAR[])
-LANGUAGE plpgsql AS $$
-BEGIN 
-    FOR i IN 1..array_length(p_user, 1) LOOP
-        IF p_phone[i] ~ '[a-zA-Z_!@#$%]' THEN 
-            RAISE NOTICE 'Number % is invalid.', p_phone[i];
-        ELSIF p_user[i] ~ '[0-9]' THEN
-            RAISE NOTICE 'Name % is invalid.', p_user[i];
-        ELSE
-            CALL upsert_u(p_user[i], p_phone[i]);
-        END IF;
+
+-- INSERT MANY
+CREATE OR REPLACE PROCEDURE insert_many_users(
+    names TEXT[],
+    surnames TEXT[],
+    phones TEXT[]
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    FOR i IN 1..array_length(names, 1)
+    LOOP
+        INSERT INTO phonebook(name, surname, phone)
+        VALUES (names[i], surnames[i], phones[i])
+        ON CONFLICT (phone) DO NOTHING;
     END LOOP;
 END;
 $$;
 
--- A procedure to delete data from the table by username or phone
-CREATE OR REPLACE PROCEDURE del_user(p VARCHAR)
-LANGUAGE plpgsql AS $$
+
+-- DELETE
+CREATE OR REPLACE PROCEDURE delete_user(val TEXT)
+LANGUAGE plpgsql
+AS $$
 BEGIN
-    DELETE FROM phonebook 
-    WHERE username = p OR phone = p;
+    DELETE FROM phonebook
+    WHERE name = val OR surname = val OR phone = val;
 END;
 $$;
