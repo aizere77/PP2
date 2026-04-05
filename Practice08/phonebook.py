@@ -93,7 +93,7 @@ def pagination():
         print("❌ Numbers only")
         return
 
-    query = "SELECT * FROM pagination(%s, %s)"
+    query = "SELECT * FROM get_phonebook_paginated(%s, %s)"
 
     with get_conn() as conn:
         with conn.cursor() as cur:
