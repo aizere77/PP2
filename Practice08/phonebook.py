@@ -74,7 +74,7 @@ def insert_many():
 def search_contacts():
     pattern = input("🔍 Search: ")
 
-    query = "SELECT * FROM records(%s)"
+    query = "SELECT * FROM search_phonebook(%s)"
 
     with get_conn() as conn:
         with conn.cursor() as cur:
