@@ -27,7 +27,7 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     return
                 
-                # 🎨 COLOR SELECTION
+                # COLOR SELECTION
                 if event.key == pygame.K_r:
                     color = (255, 0, 0)
                 elif event.key == pygame.K_g:
@@ -35,7 +35,7 @@ def main():
                 elif event.key == pygame.K_b:
                     color = (0, 0, 255)
                 
-                # 🧰 TOOL SELECTION
+                # TOOL SELECTION
                 elif event.key == pygame.K_l:
                     mode = 'draw'
                 elif event.key == pygame.K_c:
@@ -51,13 +51,13 @@ def main():
                 start_pos = event.pos
                 last_pos = event.pos
 
-            # 🖱️ STOP DRAWING
+            # STOP DRAWING
             if event.type == pygame.MOUSEBUTTONUP:
                 drawing = False
 
                 end_pos = event.pos
 
-                # 🔵 DRAW SHAPES
+                # DRAW SHAPES
                 if mode == 'rect':
                     rect = pygame.Rect(start_pos, 
                                        (end_pos[0] - start_pos[0],
@@ -70,7 +70,7 @@ def main():
                     radius = int((dx**2 + dy**2) ** 0.5)
                     pygame.draw.circle(screen, color, start_pos, radius, 2)
 
-            # 🖱️ DRAW WHILE MOVING
+            # DRAW WHILE MOVING
             if event.type == pygame.MOUSEMOTION and drawing:
                 if mode == 'draw':
                     pygame.draw.line(screen, color, last_pos, event.pos, radius)

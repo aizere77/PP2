@@ -36,7 +36,7 @@ level = 1
 speed = 7
 
 
-# 🔹 Function to generate food (not on snake)
+# Function to generate food (not on snake)
 def generate_food():
     while True:
         x = random.randrange(0, WIDTH, CELL)
@@ -48,7 +48,7 @@ def generate_food():
 food = generate_food()
 
 
-# 🔹 Main game loop
+# Main game loop
 running = True
 while running:
     screen.fill(BLACK)
@@ -75,13 +75,13 @@ while running:
     head_y = snake[0][1] + direction[1]
     new_head = (head_x, head_y)
 
-    # 🔴 Border collision (game over)
+    # Border collision (game over)
     if head_x < 0 or head_x >= WIDTH or head_y < 0 or head_y >= HEIGHT:
         print("Game Over! Hit wall")
         pygame.quit()
         sys.exit()
 
-    # 🔴 Self collision
+    # Self collision
     if new_head in snake:
         print("Game Over! Hit itself")
         pygame.quit()
@@ -90,7 +90,7 @@ while running:
     # Add new head
     snake.insert(0, new_head)
 
-    # 🟢 Eat food
+    # Eat food
     if new_head == food:
         score += 1
 
