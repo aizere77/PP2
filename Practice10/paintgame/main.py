@@ -45,7 +45,7 @@ def main():
                 elif event.key == pygame.K_e:
                     mode = 'erase'
 
-            # 🖱️ START DRAWING
+            # START DRAWING
             if event.type == pygame.MOUSEBUTTONDOWN:
                 drawing = True
                 start_pos = event.pos
