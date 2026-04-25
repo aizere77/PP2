@@ -175,14 +175,14 @@ while True:
 
     if collected:
         for coin in collected:
-            # 🔹 Add value depending on coin type
+            # Add value depending on coin type
             COINS += coin.type["value"]
 
-        # 🔹 Increase difficulty every 5 coins
+        # Increase difficulty every 5 coins
         if COINS % 5 == 0:
             SPEED += 1   # enemy speed increases
 
-        # 🔹 Spawn new coin
+        # Spawn new coin
         new_coin = Coin()
         coins.add(new_coin)
         all_sprites.add(new_coin)

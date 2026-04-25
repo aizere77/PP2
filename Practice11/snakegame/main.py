@@ -45,7 +45,7 @@ food_spawn_time = 0
 FOOD_LIFETIME = 5000  # milliseconds (5 seconds)
 
 
-# 🔹 Generate food (with random type and safe position)
+# Generate food (with random type and safe position)
 def generate_food():
     global food_type, food_spawn_time
 
