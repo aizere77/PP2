@@ -1,6 +1,12 @@
 [
   {
     "username": "Aizere",
+    "score": 575,
+    "distance": 827,
+    "coins": 41
+  },
+  {
+    "username": "Aizere",
     "score": 516,
     "distance": 584,
     "coins": 40
@@ -52,11 +58,5 @@
     "score": 29,
     "distance": 97,
     "coins": 1
-  },
-  {
-    "username": "Aizere",
-    "score": 24,
-    "distance": 124,
-    "coins": 0
   }
 ]

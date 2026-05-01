@@ -20,7 +20,7 @@ DEFAULT_DSN = {
     "port":     5432,
     "dbname":   "snakegame",
     "user":     "postgres",
-    "password": "123456",
+    "password": "Aizere2008",
 }
 
 SQL_SCHEMA = """
